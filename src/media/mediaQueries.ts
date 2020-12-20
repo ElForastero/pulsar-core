@@ -2,10 +2,10 @@ import { Dimensions, ScaledSize } from 'react-native';
 import { NamedStyles, Styles } from './types';
 
 export enum MediaQueryType {
-  MIN_WIDTH = 'minWidth',
-  MAX_WIDTH = 'maxWidth',
-  MIN_HEIGHT = 'minHeight',
-  MAX_HEIGHT = 'maxHeight',
+  MIN_WIDTH = 'min-width',
+  MAX_WIDTH = 'max-width',
+  MIN_HEIGHT = 'min-height',
+  MAX_HEIGHT = 'max-height',
 }
 
 /**
