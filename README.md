@@ -1,11 +1,12 @@
+![logo](assets/logo_text.svg)
+
 @pulsar/core
 ---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 
 > Handy style utilities for React Native and React Native Web.
-> 
-![screenshot](assets/screenshot.png)
+
 
 - 📦 Lightweight (~2 KB)
 - 🚀 Fast (main work happens outside of component)
@@ -13,7 +14,7 @@
 - 👮‍♂️ Typed with TypeScript
 - ⚛️ Supports both Native and Web
 
-![@pulsar/ui logo](assets/logo.svg)
+![screenshot](assets/screenshot.png)
 
 - [Installation](#Install)
 - [Configuration](#Configure)
@@ -43,18 +44,18 @@ import '@pulsar/core/dist/polyfill';
 import '@pulsar/core';
 
 declare module '@pulsar/core' {
-  export interface Theme {
-    // You can define any properties you want.
-    breakpoints: {
-      phone: 320,
-      tablet: 768,
-      desktop: 1280
-    },
-    colors: {
-      primary: string,
-      secondary: string,
-    }
-  }
+   export interface Theme {
+      // You can define any properties you want.
+      breakpoints: {
+         phone: 320,
+         tablet: 768,
+         desktop: 1280
+      },
+      colors: {
+         primary: string,
+         secondary: string,
+      }
+   }
 }
 ```
 
@@ -65,8 +66,8 @@ Then define your light and dark themes using `Theme` interface.
 import { Theme } from '@pulsar/core';
 
 export const light: Theme = {
-  breakpoints: {},
-  colors: {}
+   breakpoints: {},
+   colors: {}
 }
 ```
 
@@ -78,14 +79,14 @@ import { ThemeProvider } from '@pulsar/core';
 import { lightTheme, darkTheme } from './path/to/your/themes';
 
 const pulsarConfig = {
-  light: lightTheme,
-  dark: darkTheme,
+   light: lightTheme,
+   dark: darkTheme,
 }
 
 const App = () => (
-  <ThemeProvider value={pulsarConfig}>
-    {/* the rest of your app */}
-  </ThemeProvider>
+        <ThemeProvider value={pulsarConfig}>
+           {/* the rest of your app */}
+        </ThemeProvider>
 )
 ```
 
@@ -115,25 +116,25 @@ import { variants } from '@pulsar/core';
 import { DynamicStyleSheet } from 'utils/DynamicStyleSheet';
 
 const useStyles = DynamicStyleSheet.create(theme => ({
-  button: {
-    borderRadius: 8,
-    ...variants({
-      primary: {
-        backgroundColor: theme.colors.primary
-      },
-      secondary: {
-        backgroundColor: theme.colors.secondary
-      }
-    })
-  },
+   button: {
+      borderRadius: 8,
+      ...variants({
+         primary: {
+            backgroundColor: theme.colors.primary
+         },
+         secondary: {
+            backgroundColor: theme.colors.secondary
+         }
+      })
+   },
 }));
 
 const Button = ({ children, variant }) => {
-  const styles = useStyles({ variant });
+   const styles = useStyles({ variant });
 
-  return (
-    <View style={s.button}>{children}</View>
-  )
+   return (
+           <View style={s.button}>{children}</View>
+   )
 };
 ```
 
@@ -143,30 +144,30 @@ Variants allow defining different component states dependent on its props.
 
 ```ts
 DynamicStyleSheet.create(theme => ({
-  button: {
-    // Define button size variants
-    ...variants({
-      prop: 'size',
-      variants: {
-        sm: { /* ... */ },
-        xl: { /* ... */ },
-      }
-    }),
-    // Shorthand for `prop = 'variant'`
-    ...variants({
-      primary: { /* ... */ },
-      secondary: { /* ... */ },
-      tertiary: { /* ... */ }
-    }),
-    // Arrays can be used as well
-    ...variants([
-      {
-        prop: 'variant', variants: { /* ... */ }
-      },
-      {
-        prop: 'size', variants: { /* ... */ }
-      },
-    ]),
-  }
+   button: {
+      // Define button size variants
+      ...variants({
+         prop: 'size',
+         variants: {
+            sm: { /* ... */ },
+            xl: { /* ... */ },
+         }
+      }),
+      // Shorthand for `prop = 'variant'`
+      ...variants({
+         primary: { /* ... */ },
+         secondary: { /* ... */ },
+         tertiary: { /* ... */ }
+      }),
+      // Arrays can be used as well
+      ...variants([
+         {
+            prop: 'variant', variants: { /* ... */ }
+         },
+         {
+            prop: 'size', variants: { /* ... */ }
+         },
+      ]),
+   }
 }));
 ```
