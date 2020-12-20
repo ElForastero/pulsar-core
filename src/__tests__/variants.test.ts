@@ -1,4 +1,4 @@
-import { variants, getVariantKey } from '../variants';
+import { variants, getVariantKey } from '../variants/variants';
 
 describe('Variants Suite', () => {
   it('works with anonymous declarations', () => {

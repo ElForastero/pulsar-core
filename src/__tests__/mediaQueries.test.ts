@@ -1,11 +1,5 @@
-import {
-  getMediaQueryKey,
-  MediaQueryType,
-  maxWidth,
-  minWidth,
-  minHeight,
-  maxHeight,
-} from '../mediaQueries';
+import { getMediaQueryKey, maxWidth, minWidth, minHeight, maxHeight } from '../media/mediaQueries';
+import { MediaQueryType } from '../shared/enums';
 
 describe('Media Queries Suite', () => {
   it('works with minWidth', () => {

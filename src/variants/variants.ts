@@ -1,4 +1,4 @@
-import { NamedStyles, Props } from './types';
+import { NamedStyles, Props } from '../types';
 
 type AnonymousDefinition<T> = NamedStyles<T>;
 type NamedDefinition<T> = {

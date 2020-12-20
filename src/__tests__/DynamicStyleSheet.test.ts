@@ -1,8 +1,9 @@
+import '../polyfill';
 import { Dimensions, StyleSheet } from 'react-native';
 import { renderHook } from '@testing-library/react-hooks';
 import { DynamicStyleSheet } from '../DynamicStyleSheet';
-import { variants } from '../variants';
-import { maxHeight, maxWidth, minHeight, minWidth } from '../mediaQueries';
+import { variants } from '../variants/variants';
+import { maxHeight, maxWidth, minHeight, minWidth } from '../media/mediaQueries';
 
 interface Theme {
   colors: {

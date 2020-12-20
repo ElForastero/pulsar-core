@@ -1,16 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { Appearance, ColorSchemeName, Dimensions, ScaledSize, StyleSheet } from 'react-native';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Appearance, ColorSchemeName, Platform, StyleSheet } from 'react-native';
 import { Theme, NamedStyles, Props } from './types';
-import { flattenVariants, hasVariants, compileVariants } from './variants';
+import { flattenVariants, hasVariants, compileVariants, isVariantKey } from './variants/variants';
 import {
   compileMediaQueries,
   flattenMediaQueries,
   getMediaQueryDetailsFromKey,
   hasMediaQuery,
-  isBoundaryIntersected,
   isMediaQueryKey,
-} from './mediaQueries';
+} from './media/mediaQueries';
+import { MediaQueryList, MediaQueryListener } from './media/MediaQueryList';
 
+declare const window: { matchMedia: (query: string) => MediaQueryList };
 type ThemeFunc<T extends NamedStyles<T>> = ((theme: Theme) => T) | T;
 type ThemeHook<T extends NamedStyles<T>> = (props?: Props) => NamedStyles<T>;
 
@@ -20,14 +21,13 @@ type ThemeHook<T extends NamedStyles<T>> = (props?: Props) => NamedStyles<T>;
 export class DynamicStyleSheet {
   public static lightTheme: Theme = {};
   public static darkTheme: Theme = {};
+  public static enableDebug = false;
 
   public static create<T extends NamedStyles<T> | NamedStyles<any>>(
     themeFunc: ThemeFunc<T>
   ): ThemeHook<T> {
     const cache = new Map<ColorSchemeName, T>();
     const colorScheme = Appearance.getColorScheme();
-    // @todo Optimize this. No need to use dimensions if there are no media queries.
-    const dimensions = Dimensions.get('window');
 
     const cacheTheme = (scheme: ColorSchemeName) =>
       cache.set(
@@ -42,50 +42,67 @@ export class DynamicStyleSheet {
 
     const mediaQueryKeys = Object.keys(cache.get(colorScheme) as T)
       .filter(isMediaQueryKey)
-      .map(getMediaQueryDetailsFromKey);
+      .map(key => ({
+        key,
+        ...getMediaQueryDetailsFromKey(key),
+      }));
+    const variantsPresent = Object.keys(cache.get(colorScheme) as T).some(isVariantKey);
 
     /**
      * Custom React Hook for subscriptions and components' updating.
      */
     return (props: Props = {}) => {
       const [_, forceUpdate] = useState({});
-      const schemeRef = useRef(colorScheme);
-      const dimensionsRef = useRef(dimensions);
-      const stylesRef = useRef(cache.get(colorScheme) as T);
+      const colorSchemeRef = useRef(colorScheme || 'light');
 
       useEffect(() => {
         const appearanceListener: Appearance.AppearanceListener = ({ colorScheme: newScheme }) => {
-          if (newScheme !== schemeRef.current) {
-            schemeRef.current = newScheme;
-            cacheTheme(newScheme);
-            forceUpdate({});
-          }
+          debug('color scheme changed', newScheme);
+          cacheTheme(newScheme);
+          forceUpdate({});
         };
 
-        const dimensionsListener = ({ window }: { window: ScaledSize }) => {
-          mediaQueryKeys.forEach(({ type, value }) => {
-            if (isBoundaryIntersected(type, value, dimensionsRef.current, window)) {
-              forceUpdate({});
-              return;
-            }
+        const mqListener: MediaQueryListener = ctx => {
+          debug('mq listener triggered', ctx.matches);
+          forceUpdate({});
+        };
+
+        const mql: Array<MediaQueryList> = [];
+        if (mediaQueryKeys.length > 0) {
+          debug('adding mq listeners');
+          mediaQueryKeys.forEach(({ key, type, value }) => {
+            const query = Platform.OS === 'web' ? `(${type}: ${value}px)` : key;
+            mql.push(window.matchMedia(query));
+            mql[mql.length - 1].addEventListener('change', mqListener);
           });
-
-          dimensionsRef.current = window;
-        };
+        }
 
         Appearance.addChangeListener(appearanceListener);
 
-        if (mediaQueryKeys.length > 0) {
-          Dimensions.addEventListener('change', dimensionsListener);
-        }
-
         return () => {
           Appearance.removeChangeListener(appearanceListener);
-          Dimensions.removeEventListener('change', dimensionsListener);
+
+          if (Platform.OS !== 'web') {
+            debug('unsubscribing from mql');
+            mql.forEach(mq => mq.unsubscribe());
+          }
         };
       }, []);
 
-      return compileMediaQueries(compileVariants(stylesRef.current, props));
+      return useMemo(() => {
+        debug('compiling styles');
+        let result = cache.get(colorSchemeRef.current) as T;
+
+        if (variantsPresent) {
+          result = compileVariants(result, props);
+        }
+
+        if (mediaQueryKeys.length > 0) {
+          result = compileMediaQueries(result);
+        }
+
+        return result;
+      }, [props]);
     };
   }
 }
@@ -108,4 +125,10 @@ const compileStyles = <T extends NamedStyles<T>>(styles: ThemeFunc<T>, theme: Th
   }
 
   return StyleSheet.create(styleObject);
+};
+
+const debug = (...data: any) => {
+  if (DynamicStyleSheet.enableDebug) {
+    console.debug('[@pulsar/core]: ', ...data);
+  }
 };

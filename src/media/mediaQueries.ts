@@ -1,12 +1,6 @@
 import { Dimensions, ScaledSize } from 'react-native';
-import { NamedStyles, Styles } from './types';
-
-export enum MediaQueryType {
-  MIN_WIDTH = 'min-width',
-  MAX_WIDTH = 'max-width',
-  MIN_HEIGHT = 'min-height',
-  MAX_HEIGHT = 'max-height',
-}
+import { NamedStyles, Styles } from '../types';
+import { MediaQueryType } from '../shared/enums';
 
 /**
  * Emulating min-width media query.
@@ -107,17 +101,12 @@ export const flattenMediaQueries = <T extends NamedStyles<T>>(
 export const compileMediaQueries = <T extends NamedStyles<any>>(styles: T) => {
   const copy = { ...styles };
   const mediaQueries = Object.keys(styles).filter(k => k.match(/^_media:/));
-  const { width, height } = Dimensions.get('window');
+  const dimensions = Dimensions.get('window');
 
   for (let key of mediaQueries) {
     const { component, type, value } = getMediaQueryDetailsFromKey(key);
 
-    if (
-      (type === MediaQueryType.MIN_WIDTH && width >= value) ||
-      (type === MediaQueryType.MAX_WIDTH && width <= value) ||
-      (type === MediaQueryType.MIN_HEIGHT && height >= value) ||
-      (type === MediaQueryType.MAX_HEIGHT && height <= value)
-    ) {
+    if (matches(type, value, dimensions)) {
       if (!Array.isArray(copy[component])) {
         // @ts-ignore
         copy[component] = [copy[component], copy[key]];
@@ -129,6 +118,21 @@ export const compileMediaQueries = <T extends NamedStyles<any>>(styles: T) => {
   }
 
   return copy as T;
+};
+
+export const matches = (type: MediaQueryType, value: number, { width, height }: ScaledSize) => {
+  switch (type) {
+    case MediaQueryType.MIN_WIDTH:
+      return width >= value;
+    case MediaQueryType.MAX_WIDTH:
+      return width <= value;
+    case MediaQueryType.MIN_HEIGHT:
+      return height >= value;
+    case MediaQueryType.MAX_HEIGHT:
+      return height <= value;
+    default:
+      return false;
+  }
 };
 
 /**
