@@ -5,30 +5,6 @@ import { DynamicStyleSheet } from '../DynamicStyleSheet';
 import { variants } from '../variants/variants';
 import { maxHeight, maxWidth, minHeight, minWidth } from '../media/mediaQueries';
 
-interface Theme {
-  colors: {
-    primary: string;
-    secondary: string;
-  };
-}
-
-const light: Theme = {
-  colors: {
-    primary: '#3B5FF1',
-    secondary: '#344356',
-  },
-};
-
-const dark: Theme = {
-  colors: {
-    primary: '#3B5FF1',
-    secondary: '#344356',
-  },
-};
-
-DynamicStyleSheet.lightTheme = light;
-DynamicStyleSheet.darkTheme = dark;
-
 describe('DynamicStyleSheet suite', () => {
   it('works with simple styles', () => {
     const styles = {
@@ -58,7 +34,7 @@ describe('DynamicStyleSheet suite', () => {
     const compiled = StyleSheet.flatten(result.current);
     expect(compiled).toMatchObject({
       button: {
-        color: light.colors.primary,
+        color: '#3B5FF1',
       },
     });
   });
