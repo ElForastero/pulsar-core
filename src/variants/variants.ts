@@ -78,7 +78,9 @@ export const compileVariants = <T extends NamedStyles<T>>(
   for (let variantKey of variantKeys) {
     const { component, prop, variant } = getVariantDetailsFromKey(variantKey);
 
-    if (props[prop] && props[prop] === variant) {
+    const stringPropValue = String(props[prop]);
+
+    if (stringPropValue === variant) {
       if (!Array.isArray(copy[component])) {
         // @ts-ignore
         copy[component] = [copy[component], copy[variantKey]];
