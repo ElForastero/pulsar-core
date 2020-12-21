@@ -15,28 +15,21 @@ declare const window: { matchMedia: (query: string) => MediaQueryList };
 type ThemeFunc<T extends NamedStyles<T>> = ((theme: Theme) => T) | T;
 type ThemeHook<T extends NamedStyles<T>> = (props?: Props) => NamedStyles<T>;
 
+const { themes, debug: enableDebug = false } = require('./config');
+
 /**
  * The sacred magic.
  */
 export class DynamicStyleSheet {
-  public static lightTheme: Theme = {};
-  public static darkTheme: Theme = {};
-  public static enableDebug = false;
-
   public static create<T extends NamedStyles<T> | NamedStyles<any>>(
     themeFunc: ThemeFunc<T>
   ): ThemeHook<T> {
+    debug('themes:', themes);
     const cache = new Map<ColorSchemeName, T>();
     const colorScheme = Appearance.getColorScheme();
 
     const cacheTheme = (scheme: ColorSchemeName) =>
-      cache.set(
-        scheme,
-        compileStyles(
-          themeFunc,
-          scheme === 'dark' ? DynamicStyleSheet.darkTheme : DynamicStyleSheet.lightTheme
-        )
-      );
+      cache.set(scheme, compileStyles(themeFunc, scheme === 'dark' ? themes.dark : themes.light));
 
     cacheTheme(colorScheme);
 
@@ -128,7 +121,7 @@ const compileStyles = <T extends NamedStyles<T>>(styles: ThemeFunc<T>, theme: Th
 };
 
 const debug = (...data: any) => {
-  if (DynamicStyleSheet.enableDebug) {
+  if (enableDebug) {
     console.debug('[@pulsar/core]: ', ...data);
   }
 };

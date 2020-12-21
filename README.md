@@ -7,7 +7,6 @@
 
 > Handy style utilities for React Native and React Native Web.
 
-
 - 📦 Lightweight (~2 KB)
 - 🚀 Fast (main work happens outside of component)
 - 👌 No dependencies
@@ -24,6 +23,17 @@
 
 ```sh
 yarn add @pulsar/core
+yarn add --dev babel-plugin-preval
+```
+
+Add `babel-plugin-preval` to your babel config. Please note that `preval` plugin should be listed first in plugins
+array ([details](https://github.com/kentcdodds/babel-plugin-preval#installation)):
+
+```js
+module.exports = {
+  presets: ['module:metro-react-native-babel-preset'],
+  plugins: ['preval'],
+};
 ```
 
 ## Configure
@@ -44,18 +54,18 @@ import '@pulsar/core/dist/polyfill';
 import '@pulsar/core';
 
 declare module '@pulsar/core' {
-   export interface Theme {
-      // You can define any properties you want.
-      breakpoints: {
-         phone: 320,
-         tablet: 768,
-         desktop: 1280
-      },
-      colors: {
-         primary: string,
-         secondary: string,
-      }
-   }
+  export interface Theme {
+    // You can define any properties you want.
+    breakpoints: {
+      phone: 320,
+      tablet: 768,
+      desktop: 1280
+    },
+    colors: {
+      primary: string,
+      secondary: string,
+    }
+  }
 }
 ```
 
@@ -66,8 +76,8 @@ Then define your light and dark themes using `Theme` interface.
 import { Theme } from '@pulsar/core';
 
 export const light: Theme = {
-   breakpoints: {},
-   colors: {}
+  breakpoints: {},
+  colors: {}
 }
 ```
 
@@ -79,62 +89,70 @@ import { ThemeProvider } from '@pulsar/core';
 import { lightTheme, darkTheme } from './path/to/your/themes';
 
 const pulsarConfig = {
-   light: lightTheme,
-   dark: darkTheme,
+  light: lightTheme,
+  dark: darkTheme,
 }
 
 const App = () => (
-        <ThemeProvider value={pulsarConfig}>
-           {/* the rest of your app */}
-        </ThemeProvider>
+  <ThemeProvider value={pulsarConfig}>
+    {/* the rest of your app */}
+  </ThemeProvider>
 )
 ```
 
-4. Redeclare locally `DynamicStyleSheet` setting light and dark themes of your app. This step is essential and required
-   to be able to precompile styles object outside of components render cycle. Inside components theme can be accessed
-   via context API, but outside of components this is the only way to pre-setup ES modules.
+4. Create `.pulsar.config.js` config file in the root of your project. This config should export light and dark themes
+   and follow the following shape:
 
-```ts
-// utils/DynamicStyleSheet.ts
-import { DynamicStyleSheet } from '@pulsar/core';
-import { light, dark } from './path/to/themes';
-
-DynamicStyleSheet.lightTheme = light;
-DynamicStyleSheet.darkTheme = dark;
-
-export { DynamicStyleSheet };
+```js
+// .pulsar.config.js
+module.exports = {
+  themes: {
+    light: { /* your theme definition here */ },
+    dark: { /* your theme definition here */ },
+  }
+}
 ```
 
-Later use this redeclared `DynamicStyleSheet` everywhere in your app.
+Or if you have your themes defines somewhere in src code, you can jest re-export them to pulsar. E.g:
+
+```js
+// .pulsar.config.js
+const { light } = require('./src/themes/light');
+const { dark } = require('./src/themes/dark');
+
+module.exports = {
+  themes: { light, dark },
+};
+
+```
 
 ## Usage
 
 Typical usage of `@pulsar/core` look like this:
 
 ```tsx
-import { variants } from '@pulsar/core';
-import { DynamicStyleSheet } from 'utils/DynamicStyleSheet';
+import { DynamicStyleSheet, variants } from '@pulsar/core';
 
 const useStyles = DynamicStyleSheet.create(theme => ({
-   button: {
-      borderRadius: 8,
-      ...variants({
-         primary: {
-            backgroundColor: theme.colors.primary
-         },
-         secondary: {
-            backgroundColor: theme.colors.secondary
-         }
-      })
-   },
+  button: {
+    borderRadius: 8,
+    ...variants({
+      primary: {
+        backgroundColor: theme.colors.primary
+      },
+      secondary: {
+        backgroundColor: theme.colors.secondary
+      }
+    })
+  },
 }));
 
 const Button = ({ children, variant }) => {
-   const styles = useStyles({ variant });
+  const styles = useStyles({ variant });
 
-   return (
-           <View style={s.button}>{children}</View>
-   )
+  return (
+    <View style={s.button}>{children}</View>
+  )
 };
 ```
 
@@ -144,30 +162,43 @@ Variants allow defining different component states dependent on its props.
 
 ```ts
 DynamicStyleSheet.create(theme => ({
-   button: {
-      // Define button size variants
-      ...variants({
-         prop: 'size',
-         variants: {
-            sm: { /* ... */ },
-            xl: { /* ... */ },
-         }
-      }),
-      // Shorthand for `prop = 'variant'`
-      ...variants({
-         primary: { /* ... */ },
-         secondary: { /* ... */ },
-         tertiary: { /* ... */ }
-      }),
-      // Arrays can be used as well
-      ...variants([
-         {
-            prop: 'variant', variants: { /* ... */ }
-         },
-         {
-            prop: 'size', variants: { /* ... */ }
-         },
-      ]),
-   }
+  button: {
+    // Define button size variants
+    ...variants({
+      prop: 'size',
+      variants: {
+        small: {
+          height: 30,
+        },
+        normal: {
+          height: 40,
+        },
+        large: {
+          height: 50,
+        },
+      }
+    }),
+    // Shorthand for `prop = 'variant'`
+    ...variants({
+      primary: {
+        color: theme.colors.primary,
+      },
+      secondary: {
+        color: theme.cosors.secondary,
+      },
+      tertiary: {
+        color: theme.cosors.tertiary,
+      }
+    }),
+    // Arrays can be used as well
+    ...variants([
+      {
+        prop: 'variant', variants: {}
+      },
+      {
+        prop: 'size', variants: {}
+      },
+    ]),
+  }
 }));
 ```
