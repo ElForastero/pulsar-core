@@ -113,7 +113,7 @@ module.exports = {
 }
 ```
 
-Or if you have your themes defines somewhere in src code, you can jest re-export them to pulsar. E.g:
+Or if you have your themes defines somewhere in src code, you can just re-export them to pulsar. E.g:
 
 ```js
 // .pulsar.config.js
