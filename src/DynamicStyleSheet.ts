@@ -82,7 +82,7 @@ export class DynamicStyleSheet {
         };
       }, []);
 
-      let result = cache.get(colorSchemeRef.current) as T;
+      let result = { ...(cache.get(colorSchemeRef.current) as T) };
 
       if (variantsPresent) {
         result = compileVariants(result, props);
