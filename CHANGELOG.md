@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.16](https://github.com/elforastero/pulsar-core/compare/v0.0.15...v0.0.16) (2020-12-26)
+
+
+### Bug Fixes
+
+* media-queries watcher ([7927ff1](https://github.com/elforastero/pulsar-core/commit/7927ff1b7cf0e1ad791ff3ca3a1c4e9fb150bb83))
+
 ### [0.0.15](https://github.com/elforastero/pulsar-core/compare/v0.0.14...v0.0.15) (2020-12-26)
 
 ### [0.0.14](https://github.com/elforastero/pulsar-core/compare/v0.0.13...v0.0.14) (2020-12-21)
