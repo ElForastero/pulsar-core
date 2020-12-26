@@ -3,7 +3,8 @@
 @pulsar/core
 ---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
+![npm](https://img.shields.io/npm/v/@pulsar/core)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
 > Handy style utilities for React Native and React Native Web.
 
@@ -13,13 +14,69 @@
 - 👮‍♂️ Typed with TypeScript
 - ⚛️ Supports both Native and Web
 
-![screenshot](assets/screenshot.png)
+## What it looks like
 
-- [Installation](#Install)
-- [Configuration](#Configure)
-- [Usage](#Usage)
+```tsx
+import { DynamicStyleSheet, variants, maxWidth } from '@pulsar/core';
 
-## Install
+// Use `DynamicStyleSheet` in place of `StyleSheet`.
+// It accepts a function whose first argument is a theme object,
+// and returns styles as it does regular `StyleSheet`.
+const useStyles = DynamicStyleSheet.create(theme => ({
+  button: {
+    borderRadius: theme.radii.ios,
+    // You can define any component variations with `variants` helper.
+    ...variants({
+      primary: {
+        backgroundColor: theme.colors.primary
+      },
+      secondary: {
+        backgroundColor: theme.colors.secondary
+      }
+    }),
+    // Media-queries can be used as well.
+    ...maxWidth(theme.breakpoints.tablet, {
+      height: 50
+    })
+  }
+}));
+
+const Button = ({ children, variant }) => {
+  // `DynamicStyleSheet` return a custom react hook.
+  // It has optional parameter - props from which depends variants described above.
+  const styles = useStyles({ variant });
+
+  return (
+    // styles.button here is an array of compined styles
+    <View style={styles.button}>{children}</View>
+  );
+};
+```
+
+## How is it different?
+
+`@pulsar/core` doesn't call `StyleSheet.create()` during components rendering. All variants and media queries are
+flattened into main object and styles are created once during calling of `DynamicStyleSheet.create()`.
+
+The result looks like this:
+
+```ts
+// {
+//   'button': {},
+//   '_var:variant:primary:button': {},
+//   '_var:variant:secondary:button': {},
+//   '_media:max-width:768:button': {},
+// }
+```
+
+Instead of calling `StyleSheet.create()` during rendering, the custom hook returned from `DynamicStyleSheet.create()`
+just manipulates with already existing and transpiled styles.
+
+In the case above `styles.button` will contain an array of
+styles `[styles['button'], styles['_var:variant:primary:button'], styles['_media:max-width:768:button']]`. So you don't
+have to worry about merging all those keys together.
+
+## Installation
 
 ```sh
 yarn add @pulsar/core
@@ -36,7 +93,7 @@ module.exports = {
 };
 ```
 
-## Configure
+## Configuring
 
 1. Import media-queries polyfill in the root of your app. Typically `index.ts`. It's required to emulate media queries
    in RN.
@@ -113,7 +170,7 @@ module.exports = {
 }
 ```
 
-Or if you have your themes defines somewhere in src code, you can just re-export them to pulsar. E.g:
+Or if you have your themes defined somewhere in `src` code, you can just re-export them to pulsar. E.g:
 
 ```js
 // .pulsar.config.js
@@ -161,6 +218,8 @@ const Button = ({ children, variant }) => {
 Variants allow defining different component states dependent on its props.
 
 ```ts
+import { DynamicStyleSheet, variants } from '@pulsar/core';
+
 DynamicStyleSheet.create(theme => ({
   button: {
     // Define button size variants
@@ -199,6 +258,28 @@ DynamicStyleSheet.create(theme => ({
         prop: 'size', variants: {}
       },
     ]),
+  }
+}));
+```
+
+## Media Queries
+
+Available media-queries:
+
+- minWidth
+- maxWidth
+- minHeight
+- maxHeight
+
+```ts
+import { DynamicStyleSheet, maxWidth } from '@pulsar/core';
+
+DynamicStyleSheet.create(() => ({
+  button: {
+    alignSelf: 'flex-start',
+    ...minWidth(768, {
+      alignSelf: 'stretch'
+    });
   }
 }));
 ```
