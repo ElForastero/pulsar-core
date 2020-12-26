@@ -1,6 +1,6 @@
 {
   "name": "@pulsar/core",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "size": "size-limit",
     "build": "rm -rf ./dist && tsc --outDir dist",
     "build-size": "yarn build && rm -rf size_dist && cp -r dist size_dist && babel size_dist/config.js --out-dir size_dist",
-    "release": "standard-version"
+    "release": "yarn build && standard-version"
   },
   "files": [
     "dist"
