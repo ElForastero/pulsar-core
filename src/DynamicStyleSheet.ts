@@ -57,7 +57,11 @@ export class DynamicStyleSheet {
 
         const mqListener: MediaQueryListener = ctx => {
           debug('mq listener triggered', ctx.matches);
-          forceUpdate({});
+          // @todo investigate into this issue
+          // Looks like Dimensions.get() has some delay
+          setTimeout(() => {
+            forceUpdate({});
+          }, 0);
         };
 
         const mql: Array<MediaQueryList> = [];
