@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Appearance, ColorSchemeName, Platform, StyleSheet } from 'react-native';
 import { Theme, NamedStyles, Props } from './types';
 import { flattenVariants, hasVariants, compileVariants, isVariantKey } from './variants/variants';
@@ -82,20 +82,17 @@ export class DynamicStyleSheet {
         };
       }, []);
 
-      return useMemo(() => {
-        debug('compiling styles');
-        let result = cache.get(colorSchemeRef.current) as T;
+      let result = cache.get(colorSchemeRef.current) as T;
 
-        if (variantsPresent) {
-          result = compileVariants(result, props);
-        }
+      if (variantsPresent) {
+        result = compileVariants(result, props);
+      }
 
-        if (mediaQueryKeys.length > 0) {
-          result = compileMediaQueries(result);
-        }
+      if (mediaQueryKeys.length > 0) {
+        result = compileMediaQueries(result);
+      }
 
-        return result;
-      }, [props]);
+      return result;
     };
   }
 }
