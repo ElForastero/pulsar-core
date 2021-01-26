@@ -47,7 +47,7 @@ const Button = ({ children, variant }) => {
   const styles = useStyles({ variant });
 
   return (
-    // styles.button here is an array of compined styles
+    // styles.button here is an array of combined styles
     <View style={styles.button}>{children}</View>
   );
 };
