@@ -185,7 +185,7 @@ module.exports = {
 
 ## Usage
 
-Typical usage of `@pulsar/core` look like this:
+Typical usage of `@pulsar/core` looks like this:
 
 ```tsx
 import { DynamicStyleSheet, variants } from '@pulsar/core';
