@@ -102,7 +102,7 @@ module.exports = {
 import '@pulsar/core/dist/polyfill';
 ```
 
-2. Overwrite `Theme` interface with your theme shape to enable properties validation and autocomplete. Create a `.d.ts`
+2. Overwrite `Theme` interface with your theme shape to enable properties validation and autocompletion. Create a `.d.ts`
    file, e.g. `pulsar__core.d.ts`.
 
 ```ts
