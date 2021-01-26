@@ -43,7 +43,7 @@ const useStyles = DynamicStyleSheet.create(theme => ({
 
 const Button = ({ children, variant }) => {
   // `DynamicStyleSheet` returns a custom react hook.
-  // It has optional parameter - props from which depends variants described above.
+  // It has optional parameter - props from which depend variants described above.
   const styles = useStyles({ variant });
 
   return (
