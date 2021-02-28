@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Appearance, ColorSchemeName, Platform, StyleSheet } from 'react-native';
+import { Appearance, ColorSchemeName, StyleSheet } from 'react-native';
 import { Theme, NamedStyles, Props } from './types';
 import { flattenVariants, hasVariants, compileVariants, isVariantKey } from './variants/variants';
 import {
@@ -10,6 +10,7 @@ import {
   isMediaQueryKey,
 } from './media/mediaQueries';
 import { MediaQueryList, MediaQueryListener } from './media/MediaQueryList';
+import { canUseDOM } from './utils/utils';
 
 declare const window: { matchMedia: (query: string) => MediaQueryList };
 type ThemeFunc<T extends NamedStyles<T>> = ((theme: Theme) => T) | T;
@@ -68,7 +69,7 @@ export class DynamicStyleSheet {
         if (mediaQueryKeys.length > 0) {
           debug('adding mq listeners');
           mediaQueryKeys.forEach(({ key, type, value }) => {
-            const query = Platform.OS === 'web' ? `(${type}: ${value}px)` : key;
+            const query = canUseDOM ? `(${type}: ${value}px)` : key;
             mql.push(window.matchMedia(query));
             mql[mql.length - 1].addEventListener('change', mqListener);
           });
@@ -79,7 +80,7 @@ export class DynamicStyleSheet {
         return () => {
           Appearance.removeChangeListener(appearanceListener);
 
-          if (Platform.OS !== 'web') {
+          if (!canUseDOM) {
             debug('unsubscribing from mql');
             mql.forEach(mq => mq.unsubscribe());
           }
