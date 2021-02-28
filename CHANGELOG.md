@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.22](https://github.com/elforastero/pulsar-core/compare/v0.0.20...v0.0.22) (2021-02-28)
+
+
+### Features
+
+* switch MQ support detection ([23f90ae](https://github.com/elforastero/pulsar-core/commit/23f90aeb9ca188592b1ffdaa7bdab716d6035d55))
+
 ### [0.0.21](https://github.com/elforastero/pulsar-core/compare/v0.0.20...v0.0.21) (2021-02-28)
 
 
