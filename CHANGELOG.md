@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.21](https://github.com/elforastero/pulsar-core/compare/v0.0.20...v0.0.21) (2021-02-28)
+
+
+### Features
+
+* move MQ detection on canUseDOM ([aa5cec1](https://github.com/elforastero/pulsar-core/commit/aa5cec181b4b0c0fdbc4a44a79701cc2b41aa387))
+
 ### [0.0.20](https://github.com/elforastero/pulsar-core/compare/v0.0.19...v0.0.20) (2020-12-26)
 
 
