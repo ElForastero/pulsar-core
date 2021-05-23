@@ -1,9 +1,11 @@
 import '../polyfill';
 import { Dimensions, StyleSheet } from 'react-native';
+import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { DynamicStyleSheet } from '../DynamicStyleSheet';
 import { variants } from '../variants/variants';
 import { maxHeight, maxWidth, minHeight, minWidth } from '../media/mediaQueries';
+import React, { useEffect } from 'react';
 
 describe('DynamicStyleSheet suite', () => {
   it('works with simple styles', () => {
@@ -37,6 +39,67 @@ describe('DynamicStyleSheet suite', () => {
         color: '#3B5FF1',
       },
     });
+  });
+
+  it('keeps styles reference between renders', () => {
+    const useStyles = DynamicStyleSheet.create({ button: { color: 'blue' } });
+
+    const mock = jest.fn();
+    let propValue = 1;
+
+    const TestComponent = ({ prop }: { prop: number }) => {
+      const s = useStyles();
+
+      useEffect(() => {
+        mock();
+      }, [s]);
+
+      return null;
+    };
+
+    const { rerender } = render(<TestComponent prop={propValue} />);
+    rerender(<TestComponent prop={++propValue} />);
+
+    expect(mock).toBeCalledTimes(1);
+  });
+
+  it('keeps styles reference between variants renders', () => {
+    const useStyles = DynamicStyleSheet.create({
+      button: {
+        color: 'blue',
+        ...variants({
+          primary: {
+            color: 'red',
+          },
+          secondary: {
+            color: 'blue',
+          },
+        }),
+      },
+    });
+
+    const mock = jest.fn();
+
+    const TestComponent: React.FC<{ variant: 'primary' | 'secondary' }> = ({ variant }) => {
+      const s = useStyles({ variant });
+
+      useEffect(() => {
+        mock();
+      }, [s]);
+
+      return null;
+    };
+
+    // 1
+    const { rerender } = render(<TestComponent variant="primary" />);
+    // 2
+    rerender(<TestComponent variant="secondary" />);
+    rerender(<TestComponent variant="secondary" />);
+    // 3
+    rerender(<TestComponent variant="primary" />);
+    rerender(<TestComponent variant="primary" />);
+
+    expect(mock).toBeCalledTimes(3);
   });
 
   it('works with variants', () => {
@@ -138,7 +201,7 @@ describe('DynamicStyleSheet suite', () => {
       },
     }));
 
-    const { result } = renderHook(() => useStyles({}));
+    const { result } = renderHook(() => useStyles());
     const compiledPrimary = StyleSheet.flatten(result.current.button);
     expect(compiledPrimary).toMatchObject({ height: 44 });
   });
@@ -156,7 +219,7 @@ describe('DynamicStyleSheet suite', () => {
     // @ts-ignore
     Dimensions.get = () => ({ width: 768 });
 
-    const { result } = renderHook(() => useStyles({}));
+    const { result } = renderHook(() => useStyles());
     const compiledPrimary = StyleSheet.flatten(result.current.button);
     expect(compiledPrimary).toMatchObject({ height: 44 });
   });
@@ -174,7 +237,7 @@ describe('DynamicStyleSheet suite', () => {
     // @ts-ignore
     Dimensions.get = () => ({ width: 768 });
 
-    const { result } = renderHook(() => useStyles({}));
+    const { result } = renderHook(() => useStyles());
     const compiledPrimary = StyleSheet.flatten(result.current.button);
     expect(compiledPrimary).toMatchObject({ height: 44 });
   });
@@ -192,7 +255,7 @@ describe('DynamicStyleSheet suite', () => {
     // @ts-ignore
     Dimensions.get = () => ({ height: 768 });
 
-    const { result } = renderHook(() => useStyles({}));
+    const { result } = renderHook(() => useStyles());
     const compiledPrimary = StyleSheet.flatten(result.current.button);
     expect(compiledPrimary).toMatchObject({ height: 50 });
   });
@@ -210,7 +273,7 @@ describe('DynamicStyleSheet suite', () => {
     // @ts-ignore
     Dimensions.get = () => ({ height: 768 });
 
-    const { result } = renderHook(() => useStyles({}));
+    const { result } = renderHook(() => useStyles());
     const compiledPrimary = StyleSheet.flatten(result.current.button);
     expect(compiledPrimary).toMatchObject({ height: 44 });
   });

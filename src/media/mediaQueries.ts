@@ -99,7 +99,6 @@ export const flattenMediaQueries = <T extends NamedStyles<T>>(
  * Compose main style keys with media keys.
  */
 export const compileMediaQueries = <T extends NamedStyles<any>>(styles: T) => {
-  const copy = { ...styles };
   const mediaQueries = Object.keys(styles).filter(k => k.match(/^_media:/));
   const dimensions = Dimensions.get('window');
 
@@ -107,17 +106,15 @@ export const compileMediaQueries = <T extends NamedStyles<any>>(styles: T) => {
     const { component, type, value } = getMediaQueryDetailsFromKey(key);
 
     if (matches(type, value, dimensions)) {
-      if (!Array.isArray(copy[component])) {
+      if (!Array.isArray(styles[component])) {
         // @ts-ignore
-        copy[component] = [copy[component], copy[key]];
+        styles[component] = [styles[component], styles[key]];
       } else {
         // @ts-ignore
-        copy[component].push(copy[key]);
+        styles[component].push(styles[key]);
       }
     }
   }
-
-  return copy as T;
 };
 
 export const matches = (type: MediaQueryType, value: number, { width, height }: ScaledSize) => {

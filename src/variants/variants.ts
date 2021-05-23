@@ -72,7 +72,6 @@ export const compileVariants = <T extends NamedStyles<T>>(
   styles: NamedStyles<any>,
   props: Props
 ) => {
-  const copy = { ...styles };
   const variantKeys = Object.keys(styles).filter(isVariantKey);
 
   for (let variantKey of variantKeys) {
@@ -81,17 +80,15 @@ export const compileVariants = <T extends NamedStyles<T>>(
     const stringPropValue = String(props[prop]);
 
     if (stringPropValue === variant) {
-      if (!Array.isArray(copy[component])) {
+      if (!Array.isArray(styles[component])) {
         // @ts-ignore
-        copy[component] = [copy[component], copy[variantKey]];
+        styles[component] = [styles[component], styles[variantKey]];
       } else {
         // @ts-ignore
-        copy[component].push(copy[variantKey]);
+        styles[component].push(styles[variantKey]);
       }
     }
   }
-
-  return copy as T;
 };
 
 /**

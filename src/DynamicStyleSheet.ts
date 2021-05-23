@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Appearance, ColorSchemeName, StyleSheet } from 'react-native';
 import { Theme, NamedStyles, Props } from './types';
 import { flattenVariants, hasVariants, compileVariants, isVariantKey } from './variants/variants';
@@ -45,7 +45,7 @@ export class DynamicStyleSheet {
     /**
      * Custom React Hook for subscriptions and components' updating.
      */
-    return (props: Props = {}) => {
+    return (variants: Props = {}) => {
       const [_, forceUpdate] = useState({});
       const colorSchemeRef = useRef(colorScheme || 'light');
 
@@ -87,17 +87,15 @@ export class DynamicStyleSheet {
         };
       }, []);
 
-      let result = { ...(cache.get(colorSchemeRef.current) as T) };
+      return useMemo(() => {
+        const styles = { ...(cache.get(colorSchemeRef.current) as T) };
+        compileVariants(styles, variants);
+        compileMediaQueries(styles);
 
-      if (variantsPresent) {
-        result = compileVariants(result, props);
-      }
+        return styles;
 
-      if (mediaQueryKeys.length > 0) {
-        result = compileMediaQueries(result);
-      }
-
-      return result;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [_, ...Object.values(variants), variantsPresent]) as NamedStyles<T>;
     };
   }
 }
