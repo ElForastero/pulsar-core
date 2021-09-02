@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.25](https://github.com/elforastero/pulsar-core/compare/v0.0.24...v0.0.25) (2021-09-02)
+
+
+### Features
+
+* support RN v65 ([9c0e5af](https://github.com/elforastero/pulsar-core/commit/9c0e5af7308804fe97901c6a15b446d0160df1f2))
+
 ### [0.0.24](https://github.com/elforastero/pulsar-core/compare/v0.0.22...v0.0.24) (2021-05-23)
 
 
