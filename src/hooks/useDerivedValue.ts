@@ -24,11 +24,10 @@ export const useDerivedValue = <T>(func: DerivedFunc<T>): T => {
       }
     };
 
-    Dimensions.addEventListener('change', listener);
+    const subscription = Dimensions.addEventListener('change', listener);
 
-    return () => {
-      Dimensions.removeEventListener('change', listener);
-    };
+    // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
+    return subscription.remove;
   }, []);
 
   return valueRef.current;

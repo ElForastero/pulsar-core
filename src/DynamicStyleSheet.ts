@@ -75,15 +75,16 @@ export class DynamicStyleSheet {
           });
         }
 
-        Appearance.addChangeListener(appearanceListener);
+        const subscription = Appearance.addChangeListener(appearanceListener);
 
         return () => {
-          Appearance.removeChangeListener(appearanceListener);
-
           if (!canUseDOM) {
             debug('unsubscribing from mql');
             mql.forEach(mq => mq.unsubscribe());
           }
+
+          // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
+          subscription.remove();
         };
       }, []);
 

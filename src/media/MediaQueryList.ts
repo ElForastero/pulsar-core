@@ -1,4 +1,4 @@
-import { Dimensions, ScaledSize } from 'react-native';
+import { Dimensions, EmitterSubscription, ScaledSize } from 'react-native';
 import { MediaQueryType } from '../shared/enums';
 import { getMediaQueryDetailsFromKey, isBoundaryIntersected, matches } from './mediaQueries';
 
@@ -12,13 +12,15 @@ export class MediaQueryList {
   private listeners: Array<MediaQueryListener> = [];
   private dimensions: ScaledSize;
   private readonly media: MediaQuery;
+  private dimensionsSubscription: EmitterSubscription;
 
   constructor(private query: string) {
     const { type, value } = getMediaQueryDetailsFromKey(query);
     this.dimensions = Dimensions.get('window');
     this.media = { type, value };
 
-    Dimensions.addEventListener('change', this.dimensionsListener);
+    // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
+    this.dimensionsSubscription = Dimensions.addEventListener('change', this.dimensionsListener);
   }
 
   private dimensionsListener = ({ window }: { window: ScaledSize }) => {
@@ -52,6 +54,7 @@ export class MediaQueryList {
   }
 
   public unsubscribe() {
-    Dimensions.removeEventListener('change', this.dimensionsListener);
+    this.dimensionsSubscription.remove();
+    this.listeners = [];
   }
 }
