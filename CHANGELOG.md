@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.26](https://github.com/elforastero/pulsar-core/compare/v0.0.25...v0.0.26) (2021-09-03)
+
+
+### Bug Fixes
+
+* use removeEventListener in rnw ([627ff9e](https://github.com/elforastero/pulsar-core/commit/627ff9ec8e09c548db899f6c545fd0522de18f09))
+
 ### [0.0.25](https://github.com/elforastero/pulsar-core/compare/v0.0.24...v0.0.25) (2021-09-02)
 
 
