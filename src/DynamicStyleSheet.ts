@@ -81,10 +81,11 @@ export class DynamicStyleSheet {
           if (!canUseDOM) {
             debug('unsubscribing from mql');
             mql.forEach(mq => mq.unsubscribe());
+            // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
+            subscription.remove();
+          } else {
+            Appearance.removeChangeListener(appearanceListener);
           }
-
-          // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
-          subscription.remove();
         };
       }, []);
 

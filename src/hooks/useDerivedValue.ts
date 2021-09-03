@@ -1,5 +1,6 @@
 import { Dimensions, ScaledSize } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
+import { canUseDOM } from '../utils/utils';
 
 /**
  * Use some value derived from dimensions.
@@ -26,8 +27,14 @@ export const useDerivedValue = <T>(func: DerivedFunc<T>): T => {
 
     const subscription = Dimensions.addEventListener('change', listener);
 
-    // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
-    return subscription.remove;
+    return () => {
+      if (!canUseDOM) {
+        // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55354
+        subscription.remove();
+      } else {
+        Dimensions.removeEventListener('change', listener);
+      }
+    };
   }, []);
 
   return valueRef.current;
